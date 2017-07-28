@@ -1,7 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 
 void rainbowCycle() {
-	for(int i=0; i<strip.numPixels(wait); i++){
+	for(int i=0; i<strip.numPixels(); i++){
 		strip.setPixelColor(i, 255, 0, 0); //Red
 		strip.show();
 		delay(wait);

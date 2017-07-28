@@ -1,4 +1,5 @@
 #include <Adafruit_NeoPixel.h>
+#include <rainbow.h>
 
 #define PIN 9
 #define NUM_LEDS 4

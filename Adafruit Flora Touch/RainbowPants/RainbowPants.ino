@@ -2,7 +2,7 @@
 #include <CapacitiveSensor.h>
 
 #define PIN 9 //Receive pin for strip
-#define NUM_LEDS 4 //Number of LEDs on the strip
+#define NUM_LEDS 9 //Number of LEDs on the strip
 #define BRIGHTNESS 100 //Set brightness here
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
@@ -23,36 +23,60 @@ void rainbowCycle(uint8_t wait){
     for(int j=0; j<6; j++) {
       strip.setPixelColor(i, rainbowColors[j]);
       strip.show();
-
       if(i != strip.numPixels() - 1) {
           delay(wait);
+      }
+      else if (i == strip.numPixels() - 1) {
+        for(int k=0; k<strip.numPixels(); k++){
+          strip.setPixelColor(k, rainbowColors[0]);
+          strip.show();
+          strip.clear();
+          delay(27);
+          strip.setPixelColor(k, rainbowColors[1]);
+          strip.show();
+          strip.clear();
+          delay(27);
+          strip.setPixelColor(k, rainbowColors[2]);
+          strip.show();
+          strip.clear();
+          delay(27);
+          strip.setPixelColor(k, rainbowColors[3]);
+          strip.show();
+          strip.clear();
+          delay(27);
+          strip.setPixelColor(k, rainbowColors[4]);
+          strip.show();
+          strip.clear();
+          delay(27);
+          }
         }
+        }
+        strip.clear();
+        strip.show();
     }
   }
-  strip.clear();
-  strip.show();
-}
 
 void setup() {
   strip.setBrightness(BRIGHTNESS);
   strip.begin();
   strip.show();
-  Serial.begin(9600);
+  //Serial.begin(9600);
 }
 
 void loop() {
-  long start = millis();
-  long total1 = cs_9_10.capacitiveSensor(20);
+  //long start = millis();
+  //long total1 = cs_9_10.capacitiveSensor(20);
 
-  Serial.print(millis() - start);
-  Serial.print("\t");
+  //Serial.print(millis() - start);
+  //Serial.print("\t");
 
-  Serial.println(total1);
+  //Serial.println(total1);
 
-  delay(10);
+  //delay(10);
 
-  if (total1 > 4000){
-      rainbowCycle(150);
-      cs_9_10.reset_CS_AutoCal();
+  //if (total1 > 4000){
+    //  rainbowCycle(150);
+      //cs_9_10.reset_CS_AutoCal();
+      rainbowCycle(75);
   }
-}
+//}

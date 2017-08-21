@@ -19,3 +19,9 @@ void rainbowCycle(wait) {
 		}
 	}
 }
+
+
+strip.show();
+          strip.clear();
+          delay(100);
+          strip.show();

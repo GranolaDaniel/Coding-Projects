@@ -3,7 +3,7 @@
 
 #define PIN 9 //Receive pin for strip
 #define NUM_LEDS 9 //Number of LEDs on the strip
-#define BRIGHTNESS 100 //Set brightness here
+#define BRIGHTNESS 255 //Set brightness here
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRB + NEO_KHZ800);
 CapacitiveSensor cs_9_10 = CapacitiveSensor(9, 10); //CapacitiveSensor(PIN TO GET DATA, PIN THAT RECEIVES CAP INPUT)
@@ -56,27 +56,61 @@ void rainbowCycle(uint8_t wait){
     }
   }
 
+void colorPop(){
+       for(int m=0; m<strip.numPixels(); m++){
+          strip.setPixelColor(m, rainbowColors[0]);
+  }
+      strip.show();
+      strip.clear();
+      delay(500);
+      strip.show();
+      for(int m=0; m<strip.numPixels(); m++){
+          strip.setPixelColor(m, rainbowColors[1]);
+  }
+      strip.show();
+      strip.clear();
+      delay(500);
+      strip.show();
+      for(int m=0; m<strip.numPixels(); m++){
+          strip.setPixelColor(m, rainbowColors[2]);
+  }
+      strip.show();
+      strip.clear();
+      delay(500);
+      strip.show();
+      for(int m=0; m<strip.numPixels(); m++){
+          strip.setPixelColor(m, rainbowColors[3]);
+  }
+      strip.show();
+      strip.clear();
+      delay(500);
+      strip.show();
+      for(int m=0; m<strip.numPixels(); m++){
+          strip.setPixelColor(m, rainbowColors[4]);
+  }
+      strip.show();
+      strip.clear();
+      delay(500);
+      strip.show();
+      for(int m=0; m<strip.numPixels(); m++){
+          strip.setPixelColor(m, rainbowColors[5]);
+  }
+      strip.show();
+      strip.clear();
+      delay(500);
+      strip.show();
+ } 
+
+
 void setup() {
   strip.setBrightness(BRIGHTNESS);
   strip.begin();
   strip.show();
-  //Serial.begin(9600);
 }
 
 void loop() {
-  //long start = millis();
-  //long total1 = cs_9_10.capacitiveSensor(20);
-
-  //Serial.print(millis() - start);
-  //Serial.print("\t");
-
-  //Serial.println(total1);
-
-  //delay(10);
-
-  //if (total1 > 4000){
-    //  rainbowCycle(150);
-      //cs_9_10.reset_CS_AutoCal();
       rainbowCycle(75);
-  }
-//}
+      colorPop();
+      
+      delay(30000);
+}

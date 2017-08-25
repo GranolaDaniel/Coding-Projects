@@ -1,3 +1,5 @@
+from constraint import *
+
 class Solution:
 
 	def __init__(self, expression):
@@ -98,11 +100,3 @@ class Color:
 	def __init__(self, color):
 		self.color = color
 		self.color_set = set(color)
-
-
-
-
-
-
-
-

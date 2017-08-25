@@ -1,14 +1,11 @@
 from os_expression_eval import *
+from constraint import *
 
-test_solution = Solution('B U R - G')
-test_solution.separate()
+problem = Problem()
 
-"""print(test_solution.items)
-print(test_solution.working_list)"""
+problem.addVariable("a", [1,2,3])
+problem.addVariable("b", [4,5,6])
 
+problem.addConstraint(lambda a, b: a*2 == b, ("a", "b"))
 
-
-"""test_solution.working_list[1].evaluate()
-
-print(test_solution.working_list[1].working_list)"""
-
+print(problem.getSolutions())

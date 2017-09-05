@@ -28,7 +28,8 @@ ColorCube = [B, R, G, Y]
 OperationCube = [U, n, '-', '\'']
 RestrictionCube = [V, A, '=', C]
 #Cards: Have unique combination of zero to four colors
-Cards = [[B], [R], [G], [Y], [B, R], [B, G], [B, Y], [R, G], [R, Y], [G, Y], [B, R, G, Y], [], [B, R, G], [B, R, Y], [R, G, Y], [B, G, Y]]
+Cards = [[B], [R], [G], [Y], [B, R], [B, G], [B, Y], [R, G], [R, Y], [G, Y], 
+[B, R, G, Y], [], [B, R, G], [B, R, Y], [R, G, Y], [B, G, Y]]
 #Mat
 Required = []
 Permitted = []
@@ -37,15 +38,16 @@ Forbidden = []
 Goal = []
 
 Resources = []
-Universe = set()
+Universe = []
 #Variations
 #Generic cube roll function
 def cubeRoll(Cube):
 	Resources.append(choice(Cube))
+
 def universeCreate():
 	universeSize = int(input('Choose the size of the universe'))
 	while len(Universe) != universeSize:
-		Universe.pop(choice(Cards))
+		Universe.append(Cards.pop(Cards.index(choice(Cards))))
 
 
 
@@ -59,11 +61,8 @@ def universeCreate():
 
 #Token types
 
-COLOR, UNION, INTERSECT, MINUS, COMPLIMENT, UNIVERSE_OP, EMPTY_S,
-EQUALS, SUBSET, L_PAREN, R_PAREN, EOF = (
-	'COLOR', 'UNION', 'INTERSECT', 'MINUS', 'COMPLIMENT', 'UNIVERSE_OP', 'EMPTY_S', 
-	'EQUALS', 'SUBSET', 'L_PAREN', 'R_PAREN', 'EOF'
-	)
+COLOR, UNION, INTERSECT, MINUS, COMPLIMENT, UNIVERSE_OP, EMPTY_S, EQUALS, SUBSET, L_PAREN, R_PAREN, EOF = ('COLOR', 'UNION', 'INTERSECT', 'MINUS', 'COMPLIMENT', 'UNIVERSE_OP', 'EMPTY_S', 
+	'EQUALS', 'SUBSET', 'L_PAREN', 'R_PAREN', 'EOF')
 
 class Token(object):
 	def __init__(self, type, value):
@@ -116,43 +115,43 @@ class Lexer(object):
 				self.advance()
 				return Token(COLOR, self.current_char)
 
-			if self.current_char == 'U'
+			if self.current_char == 'U':
 				self.advance()
 				return Token(UNION, 'U')
 
-			if self.current_char == 'n'
+			if self.current_char == 'n':
 				self.advance()
 				return Token(INTERSECT, 'n')
 			
-			if self.current_char == '-'
+			if self.current_char == '-':
 				self.advance()
 				return Token(MINUS, '-')
 
-			if self.current_char == '\''
+			if self.current_char == '\'':
 				self.advance()
 				return Token(COMPLIMENT, '\'')
 
-			if self.current_char == 'V'
+			if self.current_char == 'V':
 				self.advance()
 				return Token(UNIVERSE_OP, 'V')
 
-			if self.current_char == 'A'
+			if self.current_char == 'A':
 				self.advance()
 				return Token(EMPTY_S, 'A')
 			
-			if self.current_char == '='
+			if self.current_char == '=':
 				self.advance()
 				return Token(EQUALS, '=')
 
-			if self.current_char == 'C'
+			if self.current_char == 'C':
 				self.advance()
 				return Token(SUBSET, 'C')
 
-			if self.current_char == '('
+			if self.current_char == '(':
 				self.advance()
 				return Token(L_PAREN, '(')
 
-			if self.current_char == ')'
+			if self.current_char == ')':
 				self.advance()
 				return Token(R_PAREN, ')')
 
@@ -190,7 +189,7 @@ class Parser(object):
 		raise Exception('Invalid syntax')
 
 	def eat(self, token_type):
-		if self.current_token == token_type:
+		if self.current_token.type == token_type:
 			self.current_token = self.lexer.get_next_token()
 		else:
 			self.error()
@@ -198,19 +197,19 @@ class Parser(object):
 	def factor(self):
 		#factor: COLOR | EMPTY_S | UNIVERSE_OP | L_PAREN expr R_PAREN -- Leaf nodes
 		token = self.current_token
-		if token_type == COLOR:
+		if token.type == COLOR:
 			self.eat(COLOR)
 			return Num(token)
 		
-		if token_type == EMPTY_S:
+		if token.type == EMPTY_S:
 			self.eat(EMPTY_S)
 			return Num(token)
 
-		if token_type == UNIVERSE_OP:
+		if token.type == UNIVERSE_OP:
 			self.eat(UNIVERSE_OP)
 			return Num(token)
 
-		elif token_type == L_PAREN:
+		elif token.type == L_PAREN:
 			self.eat(L_PAREN)
 			node = self.expr()
 			self.eat(R_PAREN)
@@ -232,11 +231,11 @@ class Parser(object):
 
 		while self.current_token.type in (UNION, INTERSECT, MINUS):
 			token = self.current_token
-			if token_type == UNION:
+			if token.type == UNION:
 				self.eat(UNION)
-			elif token_type == INTERSECT:
+			elif token.type == INTERSECT:
 				self.eat(INTERSECT)
-			elif token_type == MINUS:
+			elif token.type == MINUS:
 				self.eat(MINUS)
 
 			node = BinOp(left = node, op = token, right = self.term())
@@ -264,13 +263,31 @@ class NodeVisitor(object):
 class Interpreter(NodeVisitor):
 	def __init__(self, parser):
 		self.parser = parser
+		Solution_list = Universe
 
 	def visit_BinOp(self, node):
 		if node.op.type == UNION:
-			#TODO UNION OPERATION
-			#TODO INTERSECT OPERATION
+			for i in Solution_list:
+				if self.visit(node.left) not in Solution_list[i] and self.visit(node.right) not in Solution_list[i]:
+					Solution_list.remove(Solution_list[i])
+					return Solution_list
+
+		if node.op.type == INTERSECT:
+			for i in Solution_list:
+				if self.visit(node.left) not in Solution_list[i] or self.visit(node.right) not in Solution_list[i]:
+					Solution_list.remove(Solution_list[i])
+					return Solution_list
+
+		#if node.op.type == COMPLIMENT: 
 			#TODO COMPLIMENT OPERATION
-			#TODO MINUS OPERATION
+
+
+		if node.op.type == MINUS:
+			for i in Solution_list:
+				if self.visit(node.left) not in Solution_list[i] or (self.visit(node.left) in Solution_list[i] and self.visit(node.right) in Solution_list[i]):
+					Solution_list.remove(Solution_list[i])
+					return Solution_list
+
 
 	def visit_Num(self, node):
 		return node.value
@@ -279,6 +296,25 @@ class Interpreter(NodeVisitor):
 		tree = self.parser.parse()
 		return self.visit(tree)
 
+def main():
+	while True:
+		try:
+			ent_solution = input('Enter solution> ')
+		except EOFError:
+			break
+		if not ent_solution:
+			continue
+		
+		universeCreate()
+
+		lexer = Lexer(ent_solution)
+		parser = Parser(lexer)
+		interpreter = Interpreter(parser)
+		result = interpreter.interpret()
+		print(result)
+
+if __name__ == '__main__':
+	main()
 
 """
 class Solution:

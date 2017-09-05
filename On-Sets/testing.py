@@ -9,3 +9,4 @@ problem.addVariable("b", [4,5,6])
 problem.addConstraint(lambda a, b: a*2 == b, ("a", "b"))
 
 print(problem.getSolutions())
+

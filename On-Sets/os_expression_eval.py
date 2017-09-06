@@ -49,8 +49,6 @@ def universeCreate():
 	while len(Universe) != universeSize:
 		Universe.append(Cards.pop(Cards.index(choice(Cards))))
 
-
-
 ###############################################################################
 #                                                                             #
 #  LEXER                                                                      #
@@ -258,13 +256,12 @@ class NodeVisitor(object):
 		return visitor(node)
 
 	def generic_visit(self, node):
-		raise Exception('No visit_{} method'.format(type(node).name))
+		raise Exception('No visit_{} method'.format(type(node).__name__))
 
 class Interpreter(NodeVisitor):
 	def __init__(self, parser):
-		self.parser = parser
-		Solution_list = Universe
-
+		self.parser = parser	
+	#Edit so Solution list == Universe and is accessible to the visit methods
 	def visit_BinOp(self, node):
 		if node.op.type == UNION:
 			for i in Solution_list:
@@ -304,8 +301,6 @@ def main():
 			break
 		if not ent_solution:
 			continue
-		
-		universeCreate()
 
 		lexer = Lexer(ent_solution)
 		parser = Parser(lexer)

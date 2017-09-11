@@ -38,7 +38,6 @@ Forbidden = []
 Goal = []
 
 Resources = []
-Universe = []
 #Variations
 #Generic cube roll function
 def cubeRoll(Cube):
@@ -46,8 +45,10 @@ def cubeRoll(Cube):
 
 def universeCreate():
 	universeSize = int(input('Choose the size of the universe'))
+	Universe = []
 	while len(Universe) != universeSize:
 		Universe.append(Cards.pop(Cards.index(choice(Cards))))
+	return Universe
 
 ###############################################################################
 #                                                                             #
@@ -260,30 +261,33 @@ class NodeVisitor(object):
 
 class Interpreter(NodeVisitor):
 	def __init__(self, parser):
-		self.parser = parser	
+		self.parser = parser
 	#Edit so Solution list == Universe and is accessible to the visit methods
+	solution_list = universeCreate()
+
+
 	def visit_BinOp(self, node):
 		if node.op.type == UNION:
-			for i in Solution_list:
-				if self.visit(node.left) not in Solution_list[i] and self.visit(node.right) not in Solution_list[i]:
-					Solution_list.remove(Solution_list[i])
-					return Solution_list
+			for i in Interpreter.solution_list:
+				if self.visit(node.left) not in Interpreter.solution_list[i] and self.visit(node.right) not in Interpreter.solution_list[i]:
+					Interpreter.solution_list.remove(Interpreter.solution_list[i])
+					return Interpreter.solution_list
 
 		if node.op.type == INTERSECT:
-			for i in Solution_list:
-				if self.visit(node.left) not in Solution_list[i] or self.visit(node.right) not in Solution_list[i]:
-					Solution_list.remove(Solution_list[i])
-					return Solution_list
+			for i in Interpreter.solution_list:
+				if self.visit(node.left) not in Interpreter.solution_list[i] or self.visit(node.right) not in Interpreter.solution_list[i]:
+					Interpreter.solution_list.remove(Interpreter.solution_list[i])
+					return Interpreter.solution_list
 
 		#if node.op.type == COMPLIMENT: 
 			#TODO COMPLIMENT OPERATION
 
 
 		if node.op.type == MINUS:
-			for i in Solution_list:
-				if self.visit(node.left) not in Solution_list[i] or (self.visit(node.left) in Solution_list[i] and self.visit(node.right) in Solution_list[i]):
-					Solution_list.remove(Solution_list[i])
-					return Solution_list
+			for i in Interpreter.solution_list:
+				if self.visit(node.left) not in Interpreter.solution_list[i] or (self.visit(node.left) in Interpreter.solution_list[i] and self.visit(node.right) in Interpreter.solution_list[i]):
+					Interpreter.solution_list.remove(Interpreter.solution_list[i])
+					return Interpreter.solution_list
 
 
 	def visit_Num(self, node):

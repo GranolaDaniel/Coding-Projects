@@ -264,13 +264,12 @@ class Interpreter(NodeVisitor):
 	#Edit so Solution list == Universe and is accessible to the visit methods
 	solution_list = universeCreate()
 
-
 	def visit_BinOp(self, node):
 		if node.op.type == UNION:
 			for i in Interpreter.solution_list:
 				if self.visit(node.left) not in Interpreter.solution_list[i] and self.visit(node.right) not in Interpreter.solution_list[i]:
 					Interpreter.solution_list.remove(Interpreter.solution_list[i])
-					#return Interpreter.solution_list
+					return Interpreter.solution_list
 
 		if node.op.type == INTERSECT:
 			for i in Interpreter.solution_list:
@@ -280,7 +279,6 @@ class Interpreter(NodeVisitor):
 
 		#if node.op.type == COMPLIMENT: 
 			#TODO COMPLIMENT OPERATION
-
 
 		if node.op.type == MINUS:
 			for i in Interpreter.solution_list:

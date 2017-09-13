@@ -59,7 +59,6 @@ def universeCreate():
 
 
 #Token types
-
 COLOR, UNION, INTERSECT, MINUS, COMPLIMENT, UNIVERSE_OP, EMPTY_S, EQUALS, SUBSET, L_PAREN, R_PAREN, EOF = ('COLOR', 'UNION', 'INTERSECT', 'MINUS', 'COMPLIMENT', 'UNIVERSE_OP', 'EMPTY_S', 
 	'EQUALS', 'SUBSET', 'L_PAREN', 'R_PAREN', 'EOF')
 
@@ -100,8 +99,6 @@ class Lexer(object):
 		while self.current_char is not None and self.current_char.isspace():
 			self.advance()
 
-	#MISSING COLOR METHOD
-
 	def get_next_token(self):
 		#This is the method responsible for breaking the solution into tokens (tokenizer)
 		while self.current_char is not None:
@@ -111,8 +108,8 @@ class Lexer(object):
 				continue
 
 			if self.current_char in ['B', 'R', 'G', 'Y']:
-				self.advance()
 				return Token(COLOR, self.current_char)
+				self.advance()
 
 			if self.current_char == 'U':
 				self.advance()
@@ -156,7 +153,7 @@ class Lexer(object):
 
 			self.error()
 
-		return Token(EOF,None)
+		return Token(EOF, None)
 
 ###############################################################################
 #                                                                             #
@@ -222,10 +219,12 @@ class Parser(object):
 			token = self.current_token
 			self.eat(COMPLIMENT)
 
-			node = BinOp(left = node, op = token, right = self.factor())
+			node = BinOp(left = node, op = token, right = self.expr())
+
+		return node
 
 	def expr(self):
-		#TODO ADD NOTES
+		#Makes sure that current token type matches expected token type
 		node = self.term()
 
 		while self.current_token.type in (UNION, INTERSECT, MINUS):
@@ -271,7 +270,7 @@ class Interpreter(NodeVisitor):
 			for i in Interpreter.solution_list:
 				if self.visit(node.left) not in Interpreter.solution_list[i] and self.visit(node.right) not in Interpreter.solution_list[i]:
 					Interpreter.solution_list.remove(Interpreter.solution_list[i])
-					return Interpreter.solution_list
+					#return Interpreter.solution_list
 
 		if node.op.type == INTERSECT:
 			for i in Interpreter.solution_list:

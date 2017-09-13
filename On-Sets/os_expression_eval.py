@@ -44,7 +44,7 @@ def cubeRoll(Cube):
 	Resources.append(choice(Cube))
 
 def universeCreate():
-	universeSize = int(input('Choose the size of the universe'))
+	universeSize = int(input('Choose the size of the universe> '))
 	Universe = []
 	while len(Universe) != universeSize:
 		Universe.append(Cards.pop(Cards.index(choice(Cards))))

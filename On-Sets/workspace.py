@@ -6,7 +6,7 @@ RedToken = Token(COLOR, 'R')
 CompToken = Token(COMPLIMENT, '\'')
 UnionToken = Token(UNION, 'U')
 GreenToken = Token(COLOR, 'G')
-#(R-G) U B
+#B U (R - G)
 RMinG = BinOp(
 	left = Num(RedToken),
 	op = MinusToken,

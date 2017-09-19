@@ -222,7 +222,6 @@ class Parser(object):
 		return node
 
 	def expr(self):
-		#Makes sure that current token type matches expected token type
 		node = self.term()
 
 		while self.current_token.type in (UNION, INTERSECT, MINUS):

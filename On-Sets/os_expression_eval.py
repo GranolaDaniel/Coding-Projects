@@ -106,9 +106,10 @@ class Lexer(object):
 				continue
 
 			if self.current_char in ['B', 'R', 'G', 'Y']:
-				return Token(COLOR, self.current_char)
+				temp_char = self.current_char
 				self.advance()
-
+				return Token(COLOR, temp_char)
+				
 			if self.current_char == 'U':
 				self.advance()
 				return Token(UNION, 'U')
@@ -268,29 +269,31 @@ class Interpreter(NodeVisitor):
 			for i in Interpreter.Universe:
 				if self.visit(node.left) in i or self.visit(node.right) in i:
 					Interpreter.solution_list.append(i)
-			return Interpreter.solution_list
-
+			
 		if node.op.type == INTERSECT:
 			for i in Interpreter.Universe:
 				if self.visit(node.left) in i and self.visit(node.right) in i:
 					Interpreter.solution_list.append(i)
-			return Interpreter.solution_list
-
+			
 		if node.op.type == COMPLIMENT: 
 			for i in Interpreter.Universe:
 				if self.visit(node.left) not in i:
 					Interpreter.solution_list.append(i)
-			return Interpreter.solution_list
-
+			
 		if node.op.type == MINUS:
 			for i in Interpreter.Universe:
 				if self.visit(node.left) in i and self.visit(node.right) not in i:
 					Interpreter.solution_list.append(i)
-			return Interpreter.solution_list
+		
+		return Interpreter.solution_list
 
 
 	def visit_Num(self, node):
-		return node.value
+		for i in Interpreter.Universe:
+			if node.value in i:
+				Interpreter.solution_list.append(i)
+			
+		return Interpreter.solution_list
 
 	def interpret(self):
 		tree = self.parser.parse()

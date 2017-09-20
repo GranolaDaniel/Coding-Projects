@@ -1,4 +1,3 @@
-from constraint import *
 from random import choice, randint
 
 ###############################################################################
@@ -259,11 +258,11 @@ class NodeVisitor(object):
 class Interpreter(NodeVisitor):
 	def __init__(self, parser):
 		self.parser = parser
-
+#Testing
 	Universe = universeCreate()
 	print(Universe)
 	solution_list = []
-
+#End testing
 	def visit_BinOp(self, node):
 		if node.op.type == UNION:
 			for i in Interpreter.Universe:
@@ -281,6 +280,11 @@ class Interpreter(NodeVisitor):
 					Interpreter.solution_list.append(i)
 			
 		if node.op.type == MINUS:
+			if len(Interpreter.solution_list) > 1:
+				for i in Interpreter.solution_list:
+					if self.visit(node.right) in i:
+						Interpreter.solution_list.remove(i)
+
 			for i in Interpreter.Universe:
 				if self.visit(node.left) in i and self.visit(node.right) not in i:
 					Interpreter.solution_list.append(i)
@@ -289,9 +293,20 @@ class Interpreter(NodeVisitor):
 
 
 	def visit_Num(self, node):
-		for i in Interpreter.Universe:
-			if node.value in i:
+	#Edit for Empty Set and Universe Op
+		if node.token.type == EMPTY_S:
+			for i in Interpreter.Universe:
+				if i == []:
+					Interpreter.solution_list.append(i)
+		
+		if node.token.type == UNIVERSE_OP:
+			for i in Interpreter.Universe:
 				Interpreter.solution_list.append(i)
+
+		if node.token.type == COLOR:
+			for i in Interpreter.Universe:
+				if node.value in i:
+					Interpreter.solution_list.append(i)
 			
 		return Interpreter.solution_list
 

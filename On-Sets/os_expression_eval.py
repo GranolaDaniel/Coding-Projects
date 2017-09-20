@@ -283,7 +283,7 @@ class Interpreter(NodeVisitor):
 			for i in Interpreter.Universe:
 				if self.visit(node.left) not in i:
 					Interpreter.solution_list.append(i)
-			
+		#TODO Remove properly	
 		if node.op.type == MINUS:
 			if len(Interpreter.solution_list) > 1:
 				for i in Interpreter.solution_list:

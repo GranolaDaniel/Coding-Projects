@@ -173,6 +173,11 @@ class Num(AST):
 		self.token = token
 		self.value = token.value
 
+class SoloNum(AST):
+	def __init__(self, token):
+		self.token = token
+		self.value = value
+
 class Parser(object):
 	def __init__(self, lexer):
 		self.lexer = lexer
@@ -191,17 +196,16 @@ class Parser(object):
 	def factor(self):
 		#factor: COLOR | EMPTY_S | UNIVERSE_OP | L_PAREN expr R_PAREN -- Leaf nodes
 		token = self.current_token
-		if token.type == COLOR:
-			self.eat(COLOR)
-			return Num(token)
 		
-		if token.type == EMPTY_S:
-			self.eat(EMPTY_S)
-			return Num(token)
+		if token.type in (COLOR, EMPTY_S, UNIVERSE_OP):
+			try:
+				temp_t = self.lexer.get_next_token()
 
-		if token.type == UNIVERSE_OP:
-			self.eat(UNIVERSE_OP)
-			return Num(token)
+				self.eat(token.type)
+				return Num(token)
+			except Exception:
+				self.eat(token.type)
+				return SoloNum(token)
 
 		elif token.type == L_PAREN:
 			self.eat(L_PAREN)
@@ -222,6 +226,7 @@ class Parser(object):
 		return node
 
 	def expr(self):
+		#expr: (term) UNION | INTERSECT | MINUS e.g. B U R, (B n G) - Y
 		node = self.term()
 
 		while self.current_token.type in (UNION, INTERSECT, MINUS):
@@ -266,12 +271,12 @@ class Interpreter(NodeVisitor):
 	def visit_BinOp(self, node):
 		if node.op.type == UNION:
 			for i in Interpreter.Universe:
-				if self.visit(node.left) in i or self.visit(node.right) in i:
+				if self.visit(node.left) in i or self.visit(node.right) in i and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
 			
 		if node.op.type == INTERSECT:
 			for i in Interpreter.Universe:
-				if self.visit(node.left) in i and self.visit(node.right) in i:
+				if self.visit(node.left) in i and self.visit(node.right) in i and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
 			
 		if node.op.type == COMPLIMENT: 
@@ -286,7 +291,7 @@ class Interpreter(NodeVisitor):
 						Interpreter.solution_list.remove(i)
 
 			for i in Interpreter.Universe:
-				if self.visit(node.left) in i and self.visit(node.right) not in i:
+				if self.visit(node.left) in i and self.visit(node.right) not in i and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
 		
 		return Interpreter.solution_list
@@ -296,19 +301,23 @@ class Interpreter(NodeVisitor):
 	#Edit for Empty Set and Universe Op
 		if node.token.type == EMPTY_S:
 			for i in Interpreter.Universe:
-				if i == []:
+				if i == [] and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
 		
 		if node.token.type == UNIVERSE_OP:
 			for i in Interpreter.Universe:
-				Interpreter.solution_list.append(i)
+				if i not in Interpreter.solution_list:
+					Interpreter.solution_list.append(i)
 
 		if node.token.type == COLOR:
 			for i in Interpreter.Universe:
-				if node.value in i:
+				if node.value in i and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
 			
 		return Interpreter.solution_list
+
+	def visit_SoloNum(self, node):
+		pass
 
 	def interpret(self):
 		tree = self.parser.parse()

@@ -1,8 +1,20 @@
 from random import choice, randint
 import math
-import os_expression_eval
+#import os_expression_eval
+import pygame
+
+pygame.init()
+
+size = width, height = 600, 600
+red = 255, 0, 0
+
+screen = pygame.display.set_mode(size)
+
+while True:
+	screen.fill(red)
 
 
+"""
 #Op functions
 def Union(x,y):
 	return x | y
@@ -31,7 +43,7 @@ ops_dict = {'U': Union,
 			'C': Subset
 		}
 #New game setup
-
+"""
 
 
 

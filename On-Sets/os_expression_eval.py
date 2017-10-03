@@ -13,15 +13,17 @@ ColorSet = [B, R, G, Y]
 
 #Cubes
 U, n, V, A, C = ('U', 'n', 'V', 'A', 'C') 
-
 DigitCube = [1, 2, 3, 4, 5]
 ColorCube = [B, R, G, Y]
+
 #I'll leave some op cubes as strings for now
 OperationCube = [U, n, '-', '\'']
 RestrictionCube = [V, A, '=', C]
+
 #Cards: Have unique combination of zero to four colors
 Cards = [[B], [R], [G], [Y], [B, R], [B, G], [B, Y], [R, G], [R, Y], [G, Y], 
 [B, R, G, Y], [], [B, R, G], [B, R, Y], [R, G, Y], [B, G, Y]]
+
 #Mat
 Required = []
 Permitted = []
@@ -31,7 +33,8 @@ Goal = []
 
 Resources = []
 #Variations
-#Generic cube roll function
+
+#Cube roll functions
 def cubeRoll(Cube):
 	Resources.append(choice(Cube))
 

@@ -8,18 +8,11 @@ from random import choice, randint
 
 #Materials and conditions
 #Colors
-B = 'B'
-R = 'R'
-G = 'G'
-Y = 'Y'
+B, R, G, Y = ('B', 'R', 'G', 'Y')
 ColorSet = [B, R, G, Y]
 
 #Cubes
-U = 'U' #\u22C3
-n = 'n' #\u22C2
-V = 'V' #\u22C1 or 22BB
-A = 'A' #\u22C0
-C = 'C' #\u2286
+U, n, V, A, C = ('U', 'n', 'V', 'A', 'C') 
 
 DigitCube = [1, 2, 3, 4, 5]
 ColorCube = [B, R, G, Y]

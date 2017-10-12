@@ -1,6 +1,7 @@
 from random import choice, randint
 import math
-import os_expression_eval
+#import os_expression_eval
+import pygame
 
 
 #Op functions
@@ -21,7 +22,6 @@ def Equals(x,y):
 
 def Subset(x,y):
 
-
 #Dictionary with op functions
 ops_dict = {'U': Union,
 			'n': Intersect,
@@ -30,6 +30,15 @@ ops_dict = {'U': Union,
 			'=': Equals,
 			'C': Subset
 		}
+"""
+U = \u22C3
+n = \u22C2
+V = \u22C1 or 22BB
+A = \u22C0
+C = \u2286
+"""
+
+
 #New game setup
 
 

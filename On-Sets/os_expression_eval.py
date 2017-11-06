@@ -172,7 +172,7 @@ class Num(AST):
 class SoloNum(AST):
 	def __init__(self, token):
 		self.token = token
-		self.value = value
+		self.value = token.value
 
 class Parser(object):
 	def __init__(self, lexer):

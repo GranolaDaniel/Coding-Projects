@@ -168,7 +168,7 @@ class Num(AST):
 	def __init__(self, token):
 		self.token = token
 		self.value = token.value
-
+#Temporary class used to differentiate between individual colors and ones that are part of an expression
 class SoloNum(AST):
 	def __init__(self, token):
 		self.token = token
@@ -192,10 +192,11 @@ class Parser(object):
 	def factor(self):
 		#factor: COLOR | EMPTY_S | UNIVERSE_OP | L_PAREN expr R_PAREN -- Leaf nodes
 		token = self.current_token
-		
+		#TODO Doesn't throw out exceptions to separate Num from SoloNum
 		if token.type in (COLOR, EMPTY_S, UNIVERSE_OP):
 			try:
 				temp_t = self.lexer.get_next_token()
+				print(repr(temp_t))
 
 				self.eat(token.type)
 				return Num(token)

@@ -169,11 +169,6 @@ class Num(AST):
 		self.token = token
 		self.value = token.value
 
-class SoloNum(AST):
-	def __init__(self, token):
-		self.token = token
-		self.value = token.value
-
 class Parser(object):
 	def __init__(self, lexer):
 		self.lexer = lexer
@@ -195,17 +190,8 @@ class Parser(object):
 		
 		if token.type in (COLOR, EMPTY_S, UNIVERSE_OP):
 		#TODO(Fix): Raises exception for Single-color solutions (i.e. 'B', 'R'). This should only be raised for colors that are part of an expression (i.e. 'B U R')
-			try:
-				temp_t = self.lexer.get_next_token() 
-				if repr(temp_t) == 'Token(EOF, None)':
-					self.error()
-
-				self.eat(token.type)
-				return Num(token)
-			except Exception:
-				self.eat(token.type)
-				return SoloNum(token)
-
+			self.eat(token.type)
+			return Num(token)
 		elif token.type == L_PAREN:
 			self.eat(L_PAREN)
 			node = self.expr()
@@ -269,6 +255,7 @@ class Interpreter(NodeVisitor):
 #End testing
 	def visit_BinOp(self, node):
 		if node.op.type == UNION:
+			#self.visit(node.left/right) unneccessary, just compare Universe with the value of the left/right nodes
 			for i in Interpreter.Universe:
 				if self.visit(node.left) in i or self.visit(node.right) in i and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
@@ -284,15 +271,15 @@ class Interpreter(NodeVisitor):
 					Interpreter.solution_list.append(i)
 		#TODO Remove properly	
 		if node.op.type == MINUS:
-			if len(Interpreter.solution_list) > 1:
-				for i in Interpreter.solution_list:
-					if self.visit(node.right) in i:
-						Interpreter.solution_list.remove(i)
-
 			for i in Interpreter.Universe:
 				if self.visit(node.left) in i and self.visit(node.right) not in i and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
-		
+		#TODO Cases like '(B U R) - G'
+		"""if len(Interpreter.solution_list) > 1:
+				for i in Interpreter.solution_list:
+					if self.visit(node.right) in i:
+						Interpreter.solution_list.remove(i)
+		"""
 		return Interpreter.solution_list
 
 
@@ -314,9 +301,6 @@ class Interpreter(NodeVisitor):
 					Interpreter.solution_list.append(i)
 			
 		return Interpreter.solution_list
-
-	def visit_SoloNum(self, node):
-		pass
 
 	def interpret(self):
 		tree = self.parser.parse()

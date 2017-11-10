@@ -255,24 +255,23 @@ class Interpreter(NodeVisitor):
 #End testing
 	def visit_BinOp(self, node):
 		if node.op.type == UNION:
-			#self.visit(node.left/right) unneccessary, just compare Universe with the value of the left/right nodes
+			#TODO Doesn't work for compound expressions (e.g. (B U R) - G). BinOp.value is called causing an error
 			for i in Interpreter.Universe:
-				if self.visit(node.left) in i or self.visit(node.right) in i and i not in Interpreter.solution_list:
+				if node.left.value in i or node.right.value in i and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
 			
 		if node.op.type == INTERSECT:
 			for i in Interpreter.Universe:
-				if self.visit(node.left) in i and self.visit(node.right) in i and i not in Interpreter.solution_list:
+				if node.left.value in i and node.right.value in i and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
 			
 		if node.op.type == COMPLIMENT: 
 			for i in Interpreter.Universe:
-				if self.visit(node.left) not in i:
+				if node.left.value not in i:
 					Interpreter.solution_list.append(i)
-		#TODO Remove properly	
 		if node.op.type == MINUS:
 			for i in Interpreter.Universe:
-				if self.visit(node.left) in i and self.visit(node.right) not in i and i not in Interpreter.solution_list:
+				if node.left.value in i and node.right.value not in i and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
 		#TODO Cases like '(B U R) - G'
 		"""if len(Interpreter.solution_list) > 1:

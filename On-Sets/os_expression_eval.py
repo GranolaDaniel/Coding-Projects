@@ -249,13 +249,14 @@ class Interpreter(NodeVisitor):
 	def __init__(self, parser):
 		self.parser = parser
 #Testing
+	#TODO Use sets and frozen sets for Universe and solution list
 	Universe = universeCreate()
 	print(Universe)
 	solution_list = []
 #End testing
 	def visit_BinOp(self, node):
 		if node.op.type == UNION:
-			#TODO Doesn't work for compound expressions (e.g. (B U R) - G). BinOp.value is called causing an error | Try calling visit on the BinOp node
+			#TODO Doesn't work for compound expressions (e.g. (B U R) - G). BinOp.value is called causing an error | Try calling visit on the BinOp node, or elif node == BinOP: (evaluate)
 			for i in Interpreter.Universe:
 				if node.left.value in i or node.right.value in i and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)

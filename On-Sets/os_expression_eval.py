@@ -249,7 +249,7 @@ class Interpreter(NodeVisitor):
 	def __init__(self, parser):
 		self.parser = parser
 #Testing
-	#TODO Use sets and frozen sets for Universe and solution list
+	#TODO Use sets with frozen sets for Universe and solution list
 	Universe = universeCreate()
 	print(Universe)
 	solution_list = []

@@ -63,7 +63,7 @@ class Token(object):
 	def __str__(self):
 		#Shows class as string, e.g. Token(Color, B)
 		return 'Token({type}, {value})'.format(
-			type = self.type, 
+			type = self.type,
 			value = repr(self.value)
 		)
 	def __repr__(self):
@@ -76,10 +76,10 @@ class Lexer(object):
 		#A marker for iterating through each value of the solution
 		self.pos = 0
 		self.current_char = self.text[self.pos]
-	
+
 	def error(self):
 		raise Exception('Invalid character')
-	
+
 	def advance(self):
 		#Advances position pointer and sets current character variable
 		self.pos += 1
@@ -104,7 +104,7 @@ class Lexer(object):
 				temp_char = self.current_char
 				self.advance()
 				return Token(COLOR, temp_char)
-				
+
 			if self.current_char == 'U':
 				self.advance()
 				return Token(UNION, 'U')
@@ -112,7 +112,7 @@ class Lexer(object):
 			if self.current_char == 'n':
 				self.advance()
 				return Token(INTERSECT, 'n')
-			
+
 			if self.current_char == '-':
 				self.advance()
 				return Token(MINUS, '-')
@@ -128,7 +128,7 @@ class Lexer(object):
 			if self.current_char == 'A':
 				self.advance()
 				return Token(EMPTY_S, 'A')
-			
+
 			if self.current_char == '=':
 				self.advance()
 				return Token(EQUALS, '=')
@@ -163,12 +163,13 @@ class BinOp(AST):
 		self.left = left
 		self.token = self.op = op
 		self.right = right
+		self.sol = []
 
 class Num(AST):
 	def __init__(self, token):
 		self.token = token
 		self.value = token.value
-
+		self.sol = []
 class Parser(object):
 	def __init__(self, lexer):
 		self.lexer = lexer
@@ -187,7 +188,7 @@ class Parser(object):
 	def factor(self):
 		#factor: COLOR | EMPTY_S | UNIVERSE_OP | L_PAREN expr R_PAREN -- Leaf nodes
 		token = self.current_token
-		
+
 		if token.type in (COLOR, EMPTY_S, UNIVERSE_OP):
 		#TODO(Fix): Raises exception for Single-color solutions (i.e. 'B', 'R'). This should only be raised for colors that are part of an expression (i.e. 'B U R')
 			self.eat(token.type)
@@ -255,18 +256,19 @@ class Interpreter(NodeVisitor):
 	solution_list = []
 #End testing
 	def visit_BinOp(self, node):
+		#Go left until Type(node.left) != BinOp =>
 		if node.op.type == UNION:
 			#TODO Doesn't work for compound expressions (e.g. (B U R) - G). BinOp.value is called causing an error | Try calling visit on the BinOp node, or elif node == BinOP: (evaluate)
 			for i in Interpreter.Universe:
 				if node.left.value in i or node.right.value in i and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
-			
+
 		if node.op.type == INTERSECT:
 			for i in Interpreter.Universe:
 				if node.left.value in i and node.right.value in i and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
-			
-		if node.op.type == COMPLIMENT: 
+
+		if node.op.type == COMPLIMENT:
 			for i in Interpreter.Universe:
 				if node.left.value not in i:
 					Interpreter.solution_list.append(i)
@@ -289,7 +291,7 @@ class Interpreter(NodeVisitor):
 			for i in Interpreter.Universe:
 				if i == [] and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
-		
+
 		if node.token.type == UNIVERSE_OP:
 			for i in Interpreter.Universe:
 				if i not in Interpreter.solution_list:
@@ -299,7 +301,7 @@ class Interpreter(NodeVisitor):
 			for i in Interpreter.Universe:
 				if node.value in i and i not in Interpreter.solution_list:
 					Interpreter.solution_list.append(i)
-			
+
 		return Interpreter.solution_list
 
 	def interpret(self):

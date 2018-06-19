@@ -7,6 +7,9 @@ html {
 #page {
   width: 100vw;
   height: 100vh;
+  display: grid;
+  grid-template-rows: repeat(auto, 1fr);
+  grid-template-columns: repeat(auto, 1fr);
 }
 
 
@@ -14,6 +17,7 @@ html {
   display: flex;
   width: 95vw;
   justify-content: flex-end;
+  grid-column: 1 / 4;
   a {
     box-sizing: border-box;
     height: 10px;

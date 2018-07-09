@@ -11,6 +11,11 @@ from random import choice, randint
 B, R, G, Y = ('B', 'R', 'G', 'Y')
 ColorSet = [B, R, G, Y]
 
+class Cubes(object):
+    def __init__(self):
+
+    def cubeRoll(Cube):
+            Resources.append(choice(Cube))
 #Cubes
 U, n, V, A, C = ('U', 'n', 'V', 'A', 'C') 
 DigitCube = [1, 2, 3, 4, 5]
@@ -21,8 +26,8 @@ OperationCube = [U, n, '-', '\'']
 RestrictionCube = [V, A, '=', C]
 
 #Cards: Have unique combination of zero to four colors
-Cards = [[B], [R], [G], [Y], [B, R], [B, G], [B, Y], [R, G], [R, Y], [G, Y], 
-[B, R, G, Y], [], [B, R, G], [B, R, Y], [R, G, Y], [B, G, Y]]
+Cards = [frozenset([B]), frozenset([R]), frozenset([G]), frozenset([Y]), frozenset([B, R]), frozenset([B, G]), frozenset([B, Y]), frozenset([R, G]), frozenset([R, Y]), frozenset([G, Y]),
+frozenset([B, R, G, Y]), frozenset([]), frozenset([B, R, G]), frozenset([B, R, Y]), frozenset([R, G, Y]), frozenset([B, G, Y])]
 
 #Mat
 Required = []
@@ -34,16 +39,24 @@ Goal = []
 Resources = []
 #Variations
 
-#Cube roll functions
-def cubeRoll(Cube):
-    Resources.append(choice(Cube))
 
-#TODO: Need to be able to generate Universe as frozenset
+class Universe(object):
+    def __init__(self):
+        self.Universe = self.create()
+        self.size = len(self.Universe)
+
+    def create(self):
+        universeSize = int(input('Choose the size of the universe> '))
+        Universe = []
+        while len(Universe) != universeSize:
+            Universe.append(Cards.pop(Cards.index(choice(Cards))))
+        return Universe
+
 def universeCreate():
     universeSize = int(input('Choose the size of the universe> '))
-    Universe = frozenset([])
+    Universe = []
     while len(Universe) != universeSize:
-        Universe = Universe.union(frozenset([Cards.pop(Cards.index(choice(Cards)))]))
+        Universe.append(Cards.pop(Cards.index(choice(Cards))))
     return Universe
 
 ###############################################################################
@@ -255,23 +268,25 @@ class Interpreter(NodeVisitor):
     solution_list = []
 #End testing
     def visit_BinOp(self, node):
-        #Go left until Type(node.left) != BinOp =>
         if node.op.type == UNION:
             #TODO Doesn't work for compound expressions (e.g. (B U R) - G). BinOp.value is called causing an error | Try calling visit on the BinOp node, or elif node == BinOP: (evaluate)
-            return (self.visit(node.left).union(self.visit(node.right))).intersection(Interpreter.Universe)
+            for i in Interpreter.Universe:
+                if node.left.value in i or node.right.value in i:
+                    Interpreter.solution_list.append(i)
 
         if node.op.type == INTERSECT:
+            print('INTERSECT')
             for i in Interpreter.Universe:
-                if node.left.value in i and node.right.value in i and i not in Interpreter.solution_list:
+                if str(node.left.value) in i and str(node.right.value) in i and i not in Interpreter.solution_list:
                     Interpreter.solution_list.append(i)
 
         if node.op.type == COMPLIMENT:
             for i in Interpreter.Universe:
-                if node.left.value not in i:
+                if str(node.left.value) not in i:
                     Interpreter.solution_list.append(i)
         if node.op.type == MINUS:
             for i in Interpreter.Universe:
-                if node.left.value in i and node.right.value not in i and i not in Interpreter.solution_list:
+                if str(node.left.value) in i and str(node.right.value) not in i and i not in Interpreter.solution_list:
                     Interpreter.solution_list.append(i)
         #TODO Cases like '(B U R) - G'
         """if len(Interpreter.solution_list) > 1:
@@ -286,7 +301,7 @@ class Interpreter(NodeVisitor):
     #Edit for Empty Set and Universe Op
         if node.token.type == EMPTY_S:
             for i in Interpreter.Universe:
-                if i == [] and i not in Interpreter.solution_list:
+                if i == frozenset() and i not in Interpreter.solution_list:
                     Interpreter.solution_list.append(i)
 
         if node.token.type == UNIVERSE_OP:
@@ -295,7 +310,9 @@ class Interpreter(NodeVisitor):
                     Interpreter.solution_list.append(i)
 
         if node.token.type == COLOR:
-            return frozenset(node.value)
+            for i in Interpreter.Universe:
+                if node.value in i and i not in Interpreter.solution_list:
+                    Interpreter.solution_list.append(i)
 
         return Interpreter.solution_list
 

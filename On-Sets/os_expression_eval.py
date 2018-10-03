@@ -11,10 +11,7 @@ from random import choice, randint
 B, R, G, Y = ('B', 'R', 'G', 'Y')
 ColorSet = [B, R, G, Y]
 
-class Cubes(object):
-    def __init__(self):
-
-    def cubeRoll(Cube):
+def cubeRoll(Cube):
             Resources.append(choice(Cube))
 #Cubes
 U, n, V, A, C = ('U', 'n', 'V', 'A', 'C') 
@@ -168,7 +165,7 @@ class Lexer(object):
 #  PARSER                                                                     #
 #                                                                             #
 ###############################################################################
-
+#TODO ADD A LIST TO EACH NUM THAT SAVES ALL CARDS OF THAT VALUE
 class AST(object):
     pass
 
@@ -177,11 +174,13 @@ class BinOp(AST):
         self.left = left
         self.token = self.op = op
         self.right = right
+        self.solution = []
 
 class Num(AST):
     def __init__(self, token):
         self.token = token
         self.value = token.value
+        self.solution = []
 class Parser(object):
     def __init__(self, lexer):
         self.lexer = lexer
@@ -268,32 +267,31 @@ class Interpreter(NodeVisitor):
     solution_list = []
 #End testing
     def visit_BinOp(self, node):
-        if node.op.type == UNION:
-            #TODO Doesn't work for compound expressions (e.g. (B U R) - G). BinOp.value is called causing an error | Try calling visit on the BinOp node, or elif node == BinOP: (evaluate)
-            for i in Interpreter.Universe:
-                if node.left.value in i or node.right.value in i:
-                    Interpreter.solution_list.append(i)
+        if len(node.left.solution) > 0:
+            return """operation"""
+        else:
+            return visit_BinOp(node.left) """+ operation"""
+        # if node.op.type == UNION:
+        #TODO Doesn't work for compound expressions (e.g. (B U R) - G). BinOp.value is called causing an error | Try calling visit on the BinOp node, or elif node == BinOP: (evaluate)
+        #     for i in Interpreter.Universe:
+        #         if node.left.value in i or node.right.value in i:
+        #             Interpreter.solution_list.append(i)
+        #
+        # if node.op.type == INTERSECT:
+        #     print('INTERSECT')
+        #     for i in Interpreter.Universe:
+        #         if str(node.left.value) in i and str(node.right.value) in i and i not in Interpreter.solution_list:
+        #             Interpreter.solution_list.append(i)
+        #
+        # if node.op.type == COMPLIMENT:
+        #     for i in Interpreter.Universe:
+        #         if str(node.left.value) not in i:
+        #             Interpreter.solution_list.append(i)
+        # if node.op.type == MINUS:
+        #     for i in Interpreter.Universe:
+        #         if str(node.left.value) in i and str(node.right.value) not in i and i not in Interpreter.solution_list:
+        #             Interpreter.solution_list.append(i)
 
-        if node.op.type == INTERSECT:
-            print('INTERSECT')
-            for i in Interpreter.Universe:
-                if str(node.left.value) in i and str(node.right.value) in i and i not in Interpreter.solution_list:
-                    Interpreter.solution_list.append(i)
-
-        if node.op.type == COMPLIMENT:
-            for i in Interpreter.Universe:
-                if str(node.left.value) not in i:
-                    Interpreter.solution_list.append(i)
-        if node.op.type == MINUS:
-            for i in Interpreter.Universe:
-                if str(node.left.value) in i and str(node.right.value) not in i and i not in Interpreter.solution_list:
-                    Interpreter.solution_list.append(i)
-        #TODO Cases like '(B U R) - G'
-        """if len(Interpreter.solution_list) > 1:
-                for i in Interpreter.solution_list:
-                    if self.visit(node.right) in i:
-                        Interpreter.solution_list.remove(i)
-        """
         return Interpreter.solution_list
 
 
@@ -325,6 +323,7 @@ def main():
         try:
             ent_solution = input('Enter solution> ')
         except EOFError:
+            print('Try using python3 <3')
             break
         if not ent_solution:
             continue

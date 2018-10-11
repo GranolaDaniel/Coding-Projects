@@ -104,7 +104,6 @@ class Lexer(object):
             self.advance()
 
     def get_next_token(self):
-        #This is the method responsible for breaking the solution into tokens (tokenizer)
         while self.current_char is not None:
 
             if self.current_char.isspace():
@@ -165,7 +164,6 @@ class Lexer(object):
 #  PARSER                                                                     #
 #                                                                             #
 ###############################################################################
-#TODO ADD A LIST TO EACH NUM THAT SAVES ALL CARDS OF THAT VALUE
 class AST(object):
     pass
 
@@ -260,17 +258,30 @@ class NodeVisitor(object):
 class Interpreter(NodeVisitor):
     def __init__(self, parser):
         self.parser = parser
+        self.Universe = universeCreate()
 #Testing
-    #TODO Use sets with frozen sets for Universe and solution list
-    Universe = universeCreate()
-    print(Universe)
-    solution_list = []
+        print(self.Universe)
+        self.solution_list = []
 #End testing
+    def populate(self, node):
+        if type(node.left) == BinOp:
+            return self.visit_BinOp(node.left)
+        if len(node.left.solution) == 0:
+            for i in self.Universe:
+                if node.left.value in i:
+                    node.left.solution.append(i)
+
+        if type(node.right) == BinOp:
+            return self.visit_BinOp(node.right)
+        if len(node.right.solution) == 0:
+            for i in self.Universe:
+                if node.right.value in i:
+                    node.right.solution.append(i)
+
     def visit_BinOp(self, node):
-        if len(node.left.solution) > 0:
-            return """operation"""
-        else:
-            return visit_BinOp(node.left) """+ operation"""
+        return
+        # else:
+            # return visit_BinOp(node.left) """+ operation"""
         # if node.op.type == UNION:
         #TODO Doesn't work for compound expressions (e.g. (B U R) - G). BinOp.value is called causing an error | Try calling visit on the BinOp node, or elif node == BinOP: (evaluate)
         #     for i in Interpreter.Universe:
@@ -292,11 +303,10 @@ class Interpreter(NodeVisitor):
         #         if str(node.left.value) in i and str(node.right.value) not in i and i not in Interpreter.solution_list:
         #             Interpreter.solution_list.append(i)
 
-        return Interpreter.solution_list
+        # return Interpreter.solution_list
 
 
     def visit_Num(self, node):
-    #Edit for Empty Set and Universe Op
         if node.token.type == EMPTY_S:
             for i in Interpreter.Universe:
                 if i == frozenset() and i not in Interpreter.solution_list:
@@ -316,6 +326,7 @@ class Interpreter(NodeVisitor):
 
     def interpret(self):
         tree = self.parser.parse()
+        self.populate(tree)
         return self.visit(tree)
 
 def main():

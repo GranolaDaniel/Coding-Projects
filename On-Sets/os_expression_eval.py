@@ -199,7 +199,6 @@ class Parser(object):
         token = self.current_token
 
         if token.type in (COLOR, EMPTY_S, UNIVERSE_OP):
-        #TODO(Fix): Raises exception for Single-color solutions (i.e. 'B', 'R'). This should only be raised for colors that are part of an expression (i.e. 'B U R')
             self.eat(token.type)
             return Num(token)
         elif token.type == L_PAREN:
@@ -264,65 +263,62 @@ class Interpreter(NodeVisitor):
         self.solution_list = []
 #End testing
     def populate(self, node):
-        if type(node.left) == BinOp:
-            return self.visit_BinOp(node.left)
-        if len(node.left.solution) == 0:
-            for i in self.Universe:
-                if node.left.value in i:
-                    node.left.solution.append(i)
+       if type(node) == BinOp:
+            if type(node.left) == BinOp:
+                self.populate(node.left)
+            if len(node.left.solution) == 0 and type(node.left) != BinOp:
+                for i in self.Universe:
+                    if node.left.value in i:
+                        node.left.solution.append(i)
+                node.left.solution = frozenset(node.left.solution)
 
-        if type(node.right) == BinOp:
-            return self.visit_BinOp(node.right)
-        if len(node.right.solution) == 0:
-            for i in self.Universe:
-                if node.right.value in i:
-                    node.right.solution.append(i)
+            if type(node.right) == BinOp:
+                self.populate(node.right)
+            try:
+                if len(node.right.solution) == 0 and type(node.right) != BinOp:
+                    for i in self.Universe:
+                        if node.right.value in i:
+                            node.right.solution.append(i)
+                    node.right.solution = frozenset(node.right.solution)
+            except AttributeError:
+                pass
+       elif type(node) == Num:
+           if node.value == 'V':
+               node.solution = self.Universe
+           elif node.value == 'A':
+               node.solution = frozenset()
+           else:
+             for i in self.Universe:
+               if node.value in i:
+                   node.solution.append(i)
+           node.solution = frozenset(node.solution)
+
 
     def visit_BinOp(self, node):
-        return
-        # else:
-            # return visit_BinOp(node.left) """+ operation"""
-        # if node.op.type == UNION:
-        #TODO Doesn't work for compound expressions (e.g. (B U R) - G). BinOp.value is called causing an error | Try calling visit on the BinOp node, or elif node == BinOP: (evaluate)
-        #     for i in Interpreter.Universe:
-        #         if node.left.value in i or node.right.value in i:
-        #             Interpreter.solution_list.append(i)
-        #
-        # if node.op.type == INTERSECT:
-        #     print('INTERSECT')
-        #     for i in Interpreter.Universe:
-        #         if str(node.left.value) in i and str(node.right.value) in i and i not in Interpreter.solution_list:
-        #             Interpreter.solution_list.append(i)
-        #
-        # if node.op.type == COMPLIMENT:
-        #     for i in Interpreter.Universe:
-        #         if str(node.left.value) not in i:
-        #             Interpreter.solution_list.append(i)
-        # if node.op.type == MINUS:
-        #     for i in Interpreter.Universe:
-        #         if str(node.left.value) in i and str(node.right.value) not in i and i not in Interpreter.solution_list:
-        #             Interpreter.solution_list.append(i)
+        if type(node.left) == BinOp:
+            self.visit_BinOp(node.left)
 
-        # return Interpreter.solution_list
+        if node.op.type == UNION:
+            node.solution = node.left.solution.union(node.right.solution)
+        if node.op.type == INTERSECT:
+            node.solution = node.left.solution.intersection(node.right.solution)
+        # if node.op.type == COMPLIMENT:
+        #     print(node.left)
+        if node.op.type == MINUS:
+            node.solution = node.left.solution.difference(node.right.solution)
+
+        return node.solution
 
 
     def visit_Num(self, node):
         if node.token.type == EMPTY_S:
-            for i in Interpreter.Universe:
-                if i == frozenset() and i not in Interpreter.solution_list:
-                    Interpreter.solution_list.append(i)
-
+            if node.solution in self.Universe:
+                return node.solution
         if node.token.type == UNIVERSE_OP:
-            for i in Interpreter.Universe:
-                if i not in Interpreter.solution_list:
-                    Interpreter.solution_list.append(i)
-
+            return node.solution
         if node.token.type == COLOR:
-            for i in Interpreter.Universe:
-                if node.value in i and i not in Interpreter.solution_list:
-                    Interpreter.solution_list.append(i)
+            return node.solution
 
-        return Interpreter.solution_list
 
     def interpret(self):
         tree = self.parser.parse()

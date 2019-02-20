@@ -257,8 +257,8 @@ class NodeVisitor(object):
 class Interpreter(NodeVisitor):
     def __init__(self, parser):
         self.parser = parser
-        self.Universe = universeCreate()
 #Testing
+        # self.Universe = universeCreate()
         print(self.Universe)
         self.solution_list = []
 #End testing
@@ -302,8 +302,8 @@ class Interpreter(NodeVisitor):
             node.solution = node.left.solution.union(node.right.solution)
         if node.op.type == INTERSECT:
             node.solution = node.left.solution.intersection(node.right.solution)
-        # if node.op.type == COMPLIMENT:
-        #     print(node.left)
+        if node.op.type == COMPLIMENT:
+            node.solution = node.left.solution.symmetric_difference(frozenset(self.Universe))
         if node.op.type == MINUS:
             node.solution = node.left.solution.difference(node.right.solution)
 
@@ -328,6 +328,7 @@ class Interpreter(NodeVisitor):
 def main():
     while True:
         try:
+            Interpreter.Universe = universeCreate()
             ent_solution = input('Enter solution> ')
         except EOFError:
             print('Try using python3 <3')

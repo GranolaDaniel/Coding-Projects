@@ -32,7 +32,7 @@ The On-Sets directory contains:
  
 - [ ] Solution evaluator, implement through an AST
   - [x] Lexer/Tokenizer
-  - [ ] Parser
+  - [x] Parser
   - [ ] Interpreter
 
 - [ ] Gameplay

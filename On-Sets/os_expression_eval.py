@@ -258,15 +258,21 @@ class Interpreter(NodeVisitor):
     def __init__(self, parser):
         self.parser = parser
 #Testing
-        # self.Universe = universeCreate()
         print(self.Universe)
-        self.solution_list = []
 #End testing
+
+#Doesn't return empty set
     def populate(self, node):
        if type(node) == BinOp:
             if type(node.left) == BinOp:
                 self.populate(node.left)
-            if len(node.left.solution) == 0 and type(node.left) != BinOp:
+
+            if len(node.left.solution) == 0 and (node.left.value == 'V' or node.left.value == 'A'):
+                if node.left.value == 'V':
+                    node.left.solution = frozenset(self.Universe)
+                elif node.left.value == 'A':
+                    node.left.solution = frozenset({})
+            elif len(node.left.solution) == 0 and type(node.left) != BinOp:
                 for i in self.Universe:
                     if node.left.value in i:
                         node.left.solution.append(i)
@@ -275,7 +281,12 @@ class Interpreter(NodeVisitor):
             if type(node.right) == BinOp:
                 self.populate(node.right)
             try:
-                if len(node.right.solution) == 0 and type(node.right) != BinOp:
+                if len(node.right.solution) == 0 and (node.right.value == 'V' or node.right.value == 'A'):
+                    if node.right.value == 'V':
+                        node.right.solution = frozenset(self.Universe)
+                    elif node.right.value == 'A':
+                        node.right.solution = frozenset({})
+                elif len(node.right.solution) == 0 and type(node.right) != BinOp:
                     for i in self.Universe:
                         if node.right.value in i:
                             node.right.solution.append(i)
@@ -286,7 +297,7 @@ class Interpreter(NodeVisitor):
            if node.value == 'V':
                node.solution = self.Universe
            elif node.value == 'A':
-               node.solution = frozenset()
+               node.solution = frozenset({})
            else:
              for i in self.Universe:
                if node.value in i:
@@ -297,14 +308,16 @@ class Interpreter(NodeVisitor):
     def visit_BinOp(self, node):
         if type(node.left) == BinOp:
             self.visit_BinOp(node.left)
+        if type(node.right) == BinOp:
+            self.visit_BinOp(node.right)
 
         if node.op.type == UNION:
             node.solution = node.left.solution.union(node.right.solution)
-        if node.op.type == INTERSECT:
+        elif node.op.type == INTERSECT:
             node.solution = node.left.solution.intersection(node.right.solution)
-        if node.op.type == COMPLIMENT:
+        elif node.op.type == COMPLIMENT:
             node.solution = node.left.solution.symmetric_difference(frozenset(self.Universe))
-        if node.op.type == MINUS:
+        elif node.op.type == MINUS:
             node.solution = node.left.solution.difference(node.right.solution)
 
         return node.solution

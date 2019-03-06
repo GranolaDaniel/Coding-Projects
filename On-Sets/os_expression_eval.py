@@ -260,8 +260,6 @@ class Interpreter(NodeVisitor):
 #Testing
         print(self.Universe)
 #End testing
-
-#Doesn't return empty set
     def populate(self, node):
        if type(node) == BinOp:
             if type(node.left) == BinOp:
@@ -271,7 +269,7 @@ class Interpreter(NodeVisitor):
                 if node.left.value == 'V':
                     node.left.solution = frozenset(self.Universe)
                 elif node.left.value == 'A':
-                    node.left.solution = frozenset({})
+                    node.left.solution = frozenset({frozenset({})})
             elif len(node.left.solution) == 0 and type(node.left) != BinOp:
                 for i in self.Universe:
                     if node.left.value in i:
@@ -285,7 +283,7 @@ class Interpreter(NodeVisitor):
                     if node.right.value == 'V':
                         node.right.solution = frozenset(self.Universe)
                     elif node.right.value == 'A':
-                        node.right.solution = frozenset({})
+                        node.right.solution = frozenset({frozenset({})})
                 elif len(node.right.solution) == 0 and type(node.right) != BinOp:
                     for i in self.Universe:
                         if node.right.value in i:

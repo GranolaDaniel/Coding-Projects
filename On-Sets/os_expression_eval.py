@@ -14,7 +14,7 @@ ColorSet = [B, R, G, Y]
 def cubeRoll(Cube):
             Resources.append(choice(Cube))
 #Cubes
-U, n, V, A, C = ('U', 'n', 'V', 'A', 'C') 
+U, n, V, A, C = ('U', 'n', 'V', 'A', 'C')
 DigitCube = [1, 2, 3, 4, 5]
 ColorCube = [B, R, G, Y]
 
@@ -63,7 +63,7 @@ def universeCreate():
 ###############################################################################
 
 #Token types
-COLOR, UNION, INTERSECT, MINUS, COMPLIMENT, UNIVERSE_OP, EMPTY_S, EQUALS, SUBSET, L_PAREN, R_PAREN, EOF = ('COLOR', 'UNION', 'INTERSECT', 'MINUS', 'COMPLIMENT', 'UNIVERSE_OP', 'EMPTY_S', 
+COLOR, UNION, INTERSECT, MINUS, COMPLIMENT, UNIVERSE_OP, EMPTY_S, EQUALS, SUBSET, L_PAREN, R_PAREN, EOF = ('COLOR', 'UNION', 'INTERSECT', 'MINUS', 'COMPLIMENT', 'UNIVERSE_OP', 'EMPTY_S',
     'EQUALS', 'SUBSET', 'L_PAREN', 'R_PAREN', 'EOF')
 
 class Token(object):
@@ -257,13 +257,12 @@ class NodeVisitor(object):
 class Interpreter(NodeVisitor):
     def __init__(self, parser):
         self.parser = parser
-#Testing
-        print(self.Universe)
-#End testing
+
     def populate(self, node):
        if type(node) == BinOp:
             if type(node.left) == BinOp:
                 self.populate(node.left)
+                self.visit_BinOp(node.left)
 
             if len(node.left.solution) == 0 and (node.left.value == 'V' or node.left.value == 'A'):
                 if node.left.value == 'V':
@@ -278,6 +277,7 @@ class Interpreter(NodeVisitor):
 
             if type(node.right) == BinOp:
                 self.populate(node.right)
+                self.visit_BinOp(node.right)
             try:
                 if len(node.right.solution) == 0 and (node.right.value == 'V' or node.right.value == 'A'):
                     if node.right.value == 'V':
@@ -340,6 +340,7 @@ def main():
     while True:
         try:
             Interpreter.Universe = universeCreate()
+            print(Interpreter.Universe)
             ent_solution = input('Enter solution> ')
         except EOFError:
             print('Try using python3 <3')

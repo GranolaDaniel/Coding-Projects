@@ -72,7 +72,6 @@ class Token(object):
         self.value = value
 
     def __str__(self):
-        #Shows class as string, e.g. Token(Color, B)
         return 'Token({type}, {value})'.format(
             type = self.type,
             value = repr(self.value)
@@ -174,16 +173,25 @@ class BinOp(AST):
         self.right = right
         self.solution = []
 
+    def __repr__(self):
+        return 'BinOP --> (left: {}, op: {}, right: {})'.format(self.left, self.op, self.right)
+
 class Num(AST):
     def __init__(self, token):
         self.token = token
         self.value = token.value
         self.solution = []
+
+    def __repr__(self):
+        return 'Num: {}'.format(self.value)
 class Parser(object):
     def __init__(self, lexer):
         self.lexer = lexer
         #Sets the current token to the first token taken from the solution
         self.current_token = self.lexer.get_next_token()
+
+    def __repr__(self):
+        return 'Node --> {}'.format(repr(self.parse()))
 
     def error(self):
         raise Exception('Invalid syntax')
@@ -195,7 +203,7 @@ class Parser(object):
             self.error()
 
     def factor(self):
-        #factor: COLOR | EMPTY_S | UNIVERSE_OP | L_PAREN expr R_PAREN -- Leaf nodes
+        """factor: COLOR | EMPTY_S | UNIVERSE_OP | L_PAREN expr R_PAREN"""
         token = self.current_token
 
         if token.type in (COLOR, EMPTY_S, UNIVERSE_OP):
@@ -208,7 +216,7 @@ class Parser(object):
             return node
 
     def term(self):
-        #term: (factor) COMPLIMENT e.g. G', (B U R)'
+        """term: factor COMPLIMENT"""
         node = self.factor()
 
         while self.current_token.type is COMPLIMENT:
@@ -220,19 +228,28 @@ class Parser(object):
         return node
 
     def expr(self):
-        #expr: (term) UNION | INTERSECT | MINUS e.g. B U R, (B n G) - Y
+        """expr: term (UNION | INTERSECT | MINUS | SUBSET | EQUALS) term"""
+        """expr: expr (UNION | INTERSECT | MINUS | SUBSET | EQUALS) expr"""
         node = self.term()
 
-        while self.current_token.type in (UNION, INTERSECT, MINUS):
+        while self.current_token.type in (UNION, INTERSECT, MINUS, SUBSET, EQUALS):
             token = self.current_token
+
             if token.type == UNION:
                 self.eat(UNION)
             elif token.type == INTERSECT:
                 self.eat(INTERSECT)
             elif token.type == MINUS:
                 self.eat(MINUS)
+            elif token.type == SUBSET:
+                self.eat(SUBSET)
+            elif token.type == EQUALS:
+                self.eat(EQUALS)
 
-            node = BinOp(left = node, op = token, right = self.term())
+            else:
+                self.error()
+
+            node = BinOp(left = node, op = token, right = self.expr())
 
         return node
 

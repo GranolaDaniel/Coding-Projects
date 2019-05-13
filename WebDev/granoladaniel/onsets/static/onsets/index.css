@@ -1,0 +1,157 @@
+body {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  color: #f53890;
+}
+
+.board {
+  display: grid;
+  background: white;
+  height: 300px;
+  width: 600px;
+  padding: 0.45em;
+  box-shadow: 0.25em 0.25em 0.5em 0.01em rgba(0, 0, 0, 0.7);
+  grid-template: 3fr 1fr/repeat(3, 1fr);
+  grid-gap: 0.1em;
+}
+.board > div {
+  background: #EAC22B;
+  border: 0.1em solid white;
+  position: relative;
+  text-align: center;
+}
+.board > div.hovered {
+  border: 0.1em dashed black;
+}
+.board .solution {
+  grid-column: 1/span 2;
+}
+.board .restriction {
+  grid-column: span 3;
+}
+.board .solution, .board .goal, .board .restriction {
+  background: #4F0009;
+}
+
+.resources {
+  position: relative;
+  height: 300px;
+  width: 250px;
+  background: white;
+}
+
+.cube {
+  height: 30px;
+  width: 30px;
+  margin: 0.25em;
+  border-radius: 0.35em;
+  background: #FEF2C9;
+}
+
+.CCube::before {
+  content: "";
+  position: absolute;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+}
+
+.nCube {
+  height: 30px;
+  width: 30px;
+  margin: 0.25em;
+  border-radius: 0.35em;
+  color: green;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 1.2em;
+}
+
+#c1::before {
+  background: #ff4537;
+}
+
+#c2::before {
+  background: #35b80f;
+}
+
+#c3::before {
+  background: #35b80f;
+}
+
+#c4::before {
+  background: #ff4537;
+}
+
+#c5::before {
+  background: #ffff3d;
+}
+
+.invisible {
+  display: none;
+}
+
+div p {
+  border-top: solid 0.2em white;
+}
+
+.universe {
+  font-weight: bold;
+}
+
+.card-section {
+  display: flex;
+  position: relative;
+  height: auto;
+  width: auto;
+}
+
+.card {
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  height: 6.5em;
+  width: 3.5em;
+  margin: 0.25em;
+  background: #fce1e1;
+}
+.card:hover {
+  box-shadow: 0.25em 0.25em 0.5em 0.01em rgba(0, 0, 0, 0.7);
+}
+.card .c1, .card .c2, .card .c3, .card .c4 {
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.B .c1 {
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: #2d4cff;
+}
+
+.R .c2 {
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: #ff4537;
+}
+
+.G .c3 {
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: #35b80f;
+}
+
+.Y .c4 {
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: #ffff3d;
+}
+
+/*# sourceMappingURL=index.css.map */

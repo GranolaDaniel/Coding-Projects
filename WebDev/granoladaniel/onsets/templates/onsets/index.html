@@ -1,0 +1,30 @@
+<html>
+    <head>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'onsets/index.css' %}">
+        <title>On Sets</title>
+    </head>
+    <body>
+        <section class="card-section">
+            {% if universe %}
+                {% for k, v in universe.items %}
+                    <div class="card {{ v }}" id="{{ k }}">
+                        <div class="c1"></div>
+                        <div class="c2"></div>
+                        <div class="c3"></div>
+                        <div class="c4"></div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </section>
+        <form action="{% url 'onsets:index' %}" id="solution-form" method="POST">
+            {% csrf_token %}
+            <input type="text" name="solution" value="{{ solution }}">
+            <label for="solution">Solution</label><br>
+            <input type="submit" value="Submit Solution">
+        </form>
+        <section class="solution-render"></section>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script src="../../static/onsets/index.js"></script>
+    </body>
+</html>
